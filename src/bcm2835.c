@@ -455,7 +455,16 @@ void bcm2835_delayMicroseconds(uint64_t micros)
     // long waits and use a busy wait on the System Timer for the rest.
     */
     start =  bcm2835_st_read();
-    
+   
+    /* Not allowed to access timer registers (result is not as precise)*/
+    if (start==0)
+    {
+	t1.tv_sec = 0;
+	t1.tv_nsec = 1000 * (long)(micros);
+	nanosleep(&t1, NULL);
+	return;
+    }
+
     if (micros > 450)
     {
 	t1.tv_sec = 0;
@@ -1154,6 +1163,10 @@ uint64_t bcm2835_st_read(void)
     volatile uint32_t* paddr;
     uint32_t hi, lo;
     uint64_t st;
+
+    if (bcm2835_st==MAP_FAILED)
+	return 0;
+
     paddr = bcm2835_st + BCM2835_ST_CHI/4;
     hi = bcm2835_peri_read(paddr);
 

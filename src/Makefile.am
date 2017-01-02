@@ -6,3 +6,4 @@ test_SOURCES = test.c
 test_LDADD = ./libbcm2835.a
 TESTS = $(check_PROGRAMS)
 CLEANFILES = *~
+
